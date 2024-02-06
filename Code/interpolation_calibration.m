@@ -11,8 +11,6 @@ calc = linspace(0.1,5,1000);
 c = polyfit(V,realLUX,1);
 lux = polyval(c,calc);
 
-% lux = interp1(V,luxveri,calc,'linear','extrap');
-
 for i=2:length(V)
     interpolatedSensibility(i) = (calc(i)-calc(i-1))/(lux(i)-lux(i-1))/270000;
 end
