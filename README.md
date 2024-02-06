@@ -5,7 +5,7 @@ Thanks to the professor for providing a portion of the code and the detailed ins
 
 ## Instructions
 
-We have included detailed instructions for configuring and operating the Arduino through Atmel Studio. These instructions are crucial for anyone looking to replicate the project or understand the programming and setup process.
+Detailed instructions for configuring and operating the Arduino through Atmel Studio are included in this repository.
 
 ## Circuit Information
 
