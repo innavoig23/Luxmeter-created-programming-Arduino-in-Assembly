@@ -1,11 +1,11 @@
 ;
 ; Definizione dei registri utilizzati
-.DEF	mp 			= R16		; registro di lavoro (generico)
+.DEF	mp 		= R16		; registro di lavoro (generico)
 .DEF	mp1 		= R17      	; registro di lavoro secondario (generico)
-.DEF	var_check 	= R18		; var_check è la variabile decrementata dalla subroutine di risposta ad interrupt
+.DEF	var_check 	= R18		; var_check Ã¨ la variabile decrementata dalla subroutine di risposta ad interrupt
 								; quando arriva a 0 viene attivato un campionamento dell'ADC.
 .DEF	var_check_al = R19		; variabile decrementata dalla subroutine di risposta ad interrupt per il led di allarme dell'alimentazione
-.DEF	var_led		 = R20		; variabile decrementata dalla subroutine di risposta ad interrupt per il lampeggiamento del LED di allarme dell'alimentazione
+.DEF	var_led	     = R20		; variabile decrementata dalla subroutine di risposta ad interrupt per il lampeggiamento del LED di allarme dell'alimentazione
 ;
 .DEF	flag = R21				; flag che indica in che stato ci ci strova: Val < 4.2V; 4.2V <= Val < 4.6 V; Val >= 4.6 V
 ;
@@ -15,19 +15,19 @@
 ;
 .EQU	T_lamp 	= 50			; costante che definisce l'intervallo di lampeggiamento del LED di allarme in multipli di 10ms (in questo caso 500ms)
 .EQU	T_CHECK	= 100	    	; costante che definisce l'intervallo di campionamento della tensione di alimentazione e della tensione Vu in multipli di 10ms (in questo caso 1s)
-.EQU	TABLEN	= 255			; lunghezza della tabella (in questo caso pari all’intervallo di valori all’uscita di un ADC ad 8 bit)
+.EQU	TABLEN	= 255			; lunghezza della tabella (in questo caso pari allâ€™intervallo di valori allâ€™uscita di un ADC ad 8 bit)
 ;
 ;	Crea tabella nella flash. In questo caso la tabella ha 255 celle raggruppate a gruppi di 4.
-;	La prima cella di ogni riga è l’indice della tabella, le altre tre rispettivamente i valori delle unità,
+;	La prima cella di ogni riga Ã¨ lâ€™indice della tabella, le altre tre rispettivamente i valori delle unitÃ ,
 ;	della prima cifra decimale e della seconda cifra decimale.
 ;	Valori possibili della conversione su 8 bit da 0 a 255.
 ;   
-; 	Cambiando la LUT si può visualizzare la tensione o l'intensità luminosa.
+; 	Cambiando la LUT si puÃ² visualizzare la tensione o l'intensitÃ  luminosa.
 ;
 .CSEG 
-.ORG 	0x1FFF			; definisce l'inizio della tabella che sarà scritta in flash (bisogna essere certi di non sovrascriverla con il programma)
+.ORG 	0x1FFF			; definisce l'inizio della tabella che sarÃ  scritta in flash (bisogna essere certi di non sovrascriverla con il programma)
 ; 
-tabella:  				; label che punta all’indirizzo di inizio della tabella
+tabella:  				; label che punta allâ€™indirizzo di inizio della tabella
 .db 0,0,0,0
 .db 1,0,0,0
 .db 2,0,0,0
@@ -338,7 +338,7 @@ RESET:
 	ldi	mp, 0b0000_0000			; inizializzazione del LED di controllo dell'alimentazione spento
 	out	PORTB, mp						
 ;
-; Inizializzazione in uscita dei primi 7 bit della porta D. PD0 - PD3 = ABCD; PD4 = LE unità; PD5 = LE prima cifra decimale; PD6 = LE seconda cifra decimale.
+; Inizializzazione in uscita dei primi 7 bit della porta D. PD0 - PD3 = ABCD; PD4 = LE unitÃ ; PD5 = LE prima cifra decimale; PD6 = LE seconda cifra decimale.
 
 	ldi	mp,0b0111_1111
 	out	DDRD,mp
@@ -348,7 +348,7 @@ RESET:
 ;
 ; Divisione della frequenza di clock interno per 16 (16 MHz)
 	ldi	mp, 0b1000_0000
-	sts	CLKPR, mp		; abilitazione la programmazione del prescaler (deve sempre precedere l’istruzione seguente)
+	sts	CLKPR, mp		; abilitazione la programmazione del prescaler (deve sempre precedere lâ€™istruzione seguente)
 	ldi	mp, 0b0000_0100
 	sts	CLKPR, mp		; programmazione della divisione per 16 del clock interno
 ;
@@ -364,21 +364,21 @@ RESET:
 	ldi     mp,0b0000_0001
 	sts     TIMSK0,mp
 ;
-; Inizializzazione della variabile var_check che sarà decrementata dalla subroutine di risposta ad interrupt
+; Inizializzazione della variabile var_check che sarÃ  decrementata dalla subroutine di risposta ad interrupt
 ;
 	ldi		var_check, T_CHECK
 ;
-; Inizializzazione della variabile var_check_al che sarà decrementata dalla subroutine di risposta ad interrupt 
+; Inizializzazione della variabile var_check_al che sarÃ  decrementata dalla subroutine di risposta ad interrupt 
 ;
 	ldi		var_check_al, T_CHECK
 ;
 ;
 ;   Programmazione dell'ADC in modo da abilitarlo senza abilitare l'interrupt e selezione di un fattore di prescaling pari a 4.
-;   Deve SEMPRE precedere la selezione dell'ingresso: non si può selezionare l'ingresso dell'ADC se questo non è stato preventivamente abilitato
+;   Deve SEMPRE precedere la selezione dell'ingresso: non si puÃ² selezionare l'ingresso dell'ADC se questo non Ã¨ stato preventivamente abilitato
 	ldi 	mp,0b100_00010
 	sts		ADCSRA,mp
 ;
-;	Programmazione dell'ADC perché lavori con riferimento interno pari alla tensione di alimentazione (AVcc), giustifichi a sinistra il risultato e senta l'input su PC0 (ADC0) – quindi la tensione analogica andrà collegata su PC0
+;	Programmazione dell'ADC perchÃ© lavori con riferimento interno pari alla tensione di alimentazione (AVcc), giustifichi a sinistra il risultato e senta l'input su PC0 (ADC0) â€“ quindi la tensione analogica andrÃ  collegata su PC0
 ;
 	ldi	mp,0b0110_0000
 	sts	ADMUX,mp
@@ -388,7 +388,7 @@ RESET:
 ;
 	ldi	flag,0b0000_0000
 ;
-; Inizializzazione della variabile var_led che sarà decrementata dalla subroutine di risposta ad interrupt 
+; Inizializzazione della variabile var_led che sarÃ  decrementata dalla subroutine di risposta ad interrupt 
 ;
 	ldi		var_led,T_lamp
 ;
@@ -399,15 +399,15 @@ RESET:
 ;
 main_loop:
 ;
-;	Verifica se è trascorso un tempo pari all'intervallo di campionamento della tensione (var_check = 0?)
+;	Verifica se Ã¨ trascorso un tempo pari all'intervallo di campionamento della tensione (var_check = 0?)
 ;
 	cpi		var_check,0
 ;
-;   Salto condizionato a verifica_var_check_al se var_check è diverso da 0 (cioè se non è trascorso l'intervallo di tempo programmato per campionare la tensione)
+;   Salto condizionato a verifica_var_check_al se var_check Ã¨ diverso da 0 (cioÃ¨ se non Ã¨ trascorso l'intervallo di tempo programmato per campionare la tensione)
 ;	
 	brne	verifica_var_check_al
 ; 
-;   Le istruzioni da qui a rjmp main_loop vengono eseguite solo se var_check è pari a 0
+;   Le istruzioni da qui a rjmp main_loop vengono eseguite solo se var_check Ã¨ pari a 0
 ;
 	ldi	var_check,T_CHECK		; per prima cosa viene inizializzata nuovamente var_check
 ;
@@ -415,26 +415,26 @@ main_loop:
 ;
 	ldi	ZH,high(2*tabella)		; inizializzazione di ZH con la parte alta dell'indirizzo della tabella. 
 	ldi	ZL,low(2*tabella)		; inizializzazione di ZL con la parte bassa dell'indirizzo della tabella.
-								; l’indirizzo di tabella è moltiplicato per due perché le celle della flash sono da 16 bit
+								; lâ€™indirizzo di tabella Ã¨ moltiplicato per due perchÃ© le celle della flash sono da 16 bit
 ;									
-	push	ZH						; mette ZH nello stack per passarlo alla subroutine che lo utilizzerà come parametro
+	push	ZH						; mette ZH nello stack per passarlo alla subroutine che lo utilizzerÃ  come parametro
 ;
-	push	ZL						; mette ZL nello stack per passarlo alla subroutine che lo utilizzerà come parametro
+	push	ZL						; mette ZL nello stack per passarlo alla subroutine che lo utilizzerÃ  come parametro
 ;
 ;	Richiamo della subroutine measure_lux che campiona la tensione e visualizza il risultato (attenzione, la call memorizza nello stack i due byte dell'indirizzo di rientro)
 ;
 	call measure_lux
 ;
 ;
-verifica_var_check_al:		;	verifica se è trascorso un tempo pari all'intervallo di campionamento della tensione di alimentazione (var_check_al = 0?)
+verifica_var_check_al:		;	verifica se Ã¨ trascorso un tempo pari all'intervallo di campionamento della tensione di alimentazione (var_check_al = 0?)
 ;
 	cpi		var_check_al,0
 ;
-;   Salto condizionato a end_loop se var_check_al è diverso da 0 (cioè se non è trascorso l'intervallo di tempo programmato per campionare la tensione)
+;   Salto condizionato a end_loop se var_check_al Ã¨ diverso da 0 (cioÃ¨ se non Ã¨ trascorso l'intervallo di tempo programmato per campionare la tensione)
 ;	
 	brne	flag0
 ; 
-;   Le istruzioni da qui a rjmp main_loop vengono eseguite solo se var_check_al è pari a 0
+;   Le istruzioni da qui a rjmp main_loop vengono eseguite solo se var_check_al Ã¨ pari a 0
 ;
 	ldi	var_check_al,T_CHECK		; per prima cosa inizializza nuovamente var_check_al
 ;
@@ -468,7 +468,7 @@ lampeggiamento:
 ;
 	cpi 	var_led,0
 ;
-; Salto condizionato a end_lampeggiamento se var_led è diverso da 0 (cioè se non sono passati 0,5s)
+; Salto condizionato a end_lampeggiamento se var_led Ã¨ diverso da 0 (cioÃ¨ se non sono passati 0,5s)
 ;
 	brne 	end_loop
 ;
@@ -496,7 +496,7 @@ end_loop:						; label che indica la fine del loop principale
 ;
 ;	Segue la subroutine che legge l'uscita dell'ADC e mostra il valore letto su 8 bit sulle tre lampade a sette segmenti
 ;   Riceve come parametri passati dal programma chiamante nello stack i byte basso ed alto dell'indirizzo iniziale della LUT preceduti
-;	dall’indirizzo di rientro (2 byte).
+;	dallâ€™indirizzo di rientro (2 byte).
 ;
 ;
 ;
@@ -504,12 +504,12 @@ measure_lux:
 ;
 	pop	mp				; estrae temporaneamente dallo stack l'ultimo byte dell'indirizzo di rientro messo nello stack dalla call
 	pop	mp1				; estrare temporaneamente dallo stack il primo byte dell'indirizzo di rientro messo nello stack dalla call
-	pop	ZL				; recupera il byte basso dell'indirizzo  della tabella che è stato passato dal programma chiamante nello stack
-	pop	ZH				; recupera il byte alto dell'indirizzo della tabella che è stato passato dal programma chiamante nello stack
+	pop	ZL				; recupera il byte basso dell'indirizzo  della tabella che Ã¨ stato passato dal programma chiamante nello stack
+	pop	ZH				; recupera il byte alto dell'indirizzo della tabella che Ã¨ stato passato dal programma chiamante nello stack
 	push mp1			; ripristina nello stack il primo byte dell'indirizzo di rientro messo nello stack dalla call
 	push mp				; ripristina nello stack l'ultimo byte dell'indirizzo di rientro messo nello stack dalla call
 ;
-;	Programma l'ADC perché lavori con riferimento interno pari alla tensione di alimentazione (AVcc), giustifichi a sinistra il risultato e senta l'input su PC0 (ADC0) – quindi la tensione analogica andrà collegata su PC0
+;	Programma l'ADC perchÃ© lavori con riferimento interno pari alla tensione di alimentazione (AVcc), giustifichi a sinistra il risultato e senta l'input su PC0 (ADC0) â€“ quindi la tensione analogica andrÃ  collegata su PC0
 ;
 	ldi	mp,0b0110_0000
 	sts	ADMUX,mp
@@ -517,30 +517,30 @@ measure_lux:
 ;
 ;	Inizia adesso la conversione portando a 1 il bit 6 di ADCSRA (ADSC) senza modificare null'altro in ADCSRA
 ;
-	lds	mp,ADCSRA		; legge il valore del registro dell’AD in mp
+	lds	mp,ADCSRA		; legge il valore del registro dellâ€™AD in mp
 	ldi	mp1,0b0100_0000	; prepara la maschera di programmazione
 	or	mp,mp1			; porta a 1 in mp il bit 6
-	sts	ADCSRA,mp		; scrive il valore modificato mediante l’or in ADCSRA
+	sts	ADCSRA,mp		; scrive il valore modificato mediante lâ€™or in ADCSRA
 ;
 ; Aspetta che la conversione sia pronta testando ADSC in ADCSRA: a conversione terminata ADSC torna a 0 
 ;
 check_conv:
 	lds	mp,ADCSRA
 	ldi	mp1,0b0100_0000
-	and	mp,mp1				; se il bit 6 di ADCSRA torna a 0 la conversione è terminata
+	and	mp,mp1				; se il bit 6 di ADCSRA torna a 0 la conversione Ã¨ terminata
 	brne	check_conv
 ;
 ;
-; Legge il valore convertito su 8 bit (siccome è stata scelta la giustificazione a sinistra gli 8 bit più significativi 
+; Legge il valore convertito su 8 bit (siccome Ã¨ stata scelta la giustificazione a sinistra gli 8 bit piÃ¹ significativi 
 ; del risultato sono in ADCH)
 ;
 ;
 	nop					; istruzione di comodo per il debug
 	lds	mp, ADCH		; legge il valore di ADCH (uscita ad 8 bit del convertitore A/D giustificata a sinistra)
-	ldi	mp1,4			; numero di cifre dalle quali è costituita una riga (prima cifra incice, le altre i valori)
+	ldi	mp1,4			; numero di cifre dalle quali Ã¨ costituita una riga (prima cifra incice, le altre i valori)
 	mul	mp,mp1			; ottiene l'indice del gruppo di numeri della tabella (indicatore della "riga")
 ;
-;	ATTENZIONE: Il risultato dell'operazione mul è su 16 bit: il byte basso in R0 ed il byte alto in R1
+;	ATTENZIONE: Il risultato dell'operazione mul Ã¨ su 16 bit: il byte basso in R0 ed il byte alto in R1
 ;  
 ;
 	add	ZL,R0			; Punta alla cella della tabella che corrisponde al valore letto dall'ADC sommando all'inizio della
@@ -551,7 +551,7 @@ check_conv:
 ;	Prepara la visualizzazione su display
 ;
 	lpm 	mp, Z+			; legge primo valore della riga della tabella che contiene il valore completo intero su 8 bit ed 
-							; incrementa Z (cioè leggo l'indice che non uso)
+							; incrementa Z (cioÃ¨ leggo l'indice che non uso)
 ;
 	lpm	mp, Z+					; legge il secondo valore della riga della tabella che contiene la cifra delle centinaia (BCD, nibble basso) ed incrementa Z
 	ori	mp,0b0111_0000			; lascia a uno PD4 - PD6 e non modifica PD0 - PD3	
@@ -581,12 +581,12 @@ check_conv:
 	ori	mp,0b0111_0000			; mette a uno PD4 - PD7 (alza LE per fissare il valore)
 	out	PORTD, mp	
 ;
-	lpm	mp, Z+					; legge il quarto valore della riga della tabella che contiene la cifra delle unità (BCD, nibble basso) ed ;						  incrementa Z
+	lpm	mp, Z+					; legge il quarto valore della riga della tabella che contiene la cifra delle unitÃ  (BCD, nibble basso) ed ;						  incrementa Z
 ;
 	ori	mp,0b0111_0000			; lascia a 1  PD4 - PD7		e non modifica PD0 - PD3		
-	out	PORTD, mp				; scrive in uscita la cifra delle unità
-	andi	mp, 0b0011_1111		; prepara PD6 a livello basso (LE unità) senza modificare la cifra delle unità
-	out	PORTD, mp				; abilita LE unità
+	out	PORTD, mp				; scrive in uscita la cifra delle unitÃ 
+	andi	mp, 0b0011_1111		; prepara PD6 a livello basso (LE unitÃ ) senza modificare la cifra delle unitÃ 
+	out	PORTD, mp				; abilita LE unitÃ 
 	nop							; istruzioni di attesa necessarie per garantire l'efficacia dello strobe
 	nop
 	nop
@@ -603,28 +603,28 @@ check_conv:
 ;
 ;
 measure_al:
-;	Programma l'ADC perché lavori con riferimento interno pari alla tensione di alimentazione (AVcc), giustifichi a sinistra il risultato e senta l'input su PC1 (ADC1) – quindi la tensione analogica andrà collegata su PC1
+;	Programma l'ADC perchÃ© lavori con riferimento interno pari alla tensione di alimentazione (AVcc), giustifichi a sinistra il risultato e senta l'input su PC1 (ADC1) â€“ quindi la tensione analogica andrÃ  collegata su PC1
 ;
 	ldi	mp,0b0110_0001
 	sts	ADMUX,mp
 ;
 ;	Inizia adesso la conversione portando a 1 il bit 6 di ADCSRA (ADSC) senza modificare null'altro in ADCSRA
 ;
-	lds	mp,ADCSRA		; legge il valore del registro dell’AD in mp
+	lds	mp,ADCSRA		; legge il valore del registro dellâ€™AD in mp
 	ldi	mp1,0b0100_0000	; prepara la maschera di programmazione
 	or	mp,mp1			; porta a 1 in mp il bit 6
-	sts	ADCSRA,mp		; scrive il valore modificato mediante l’or in ADCSRA
+	sts	ADCSRA,mp		; scrive il valore modificato mediante lâ€™or in ADCSRA
 ;
 ; Aspetta che la conversione sia pronta testando ADSC in ADCSRA: a conversione terminata ADSC torna a 0 
 ;
 check_conv_al:
 	lds	mp,ADCSRA
 	ldi	mp1,0b0100_0000
-	and	mp,mp1			; se il bit 6 di ADCSRA torna a 0 la conversione è terminata
+	and	mp,mp1			; se il bit 6 di ADCSRA torna a 0 la conversione Ã¨ terminata
 	brne	check_conv_al
 ;
 ;
-; Legge il valore convertito su 8 bit (siccome è stata scelta la giustificazione a sinistra gli 8 bit più significativi 
+; Legge il valore convertito su 8 bit (siccome Ã¨ stata scelta la giustificazione a sinistra gli 8 bit piÃ¹ significativi 
 ; del risultato sono in ADCH)
 ;
 	nop					; istruzione di comodo per il debug
@@ -752,8 +752,3 @@ TWSI:
 SPM_RDY:
 	reti							; vector 26:	Store Program Memory Ready Handler
 ;
-
-
-
-
-
